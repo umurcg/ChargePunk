@@ -11,8 +11,6 @@ public class ChargeController : MonoBehaviour
     public float userSpeed = 3f;
 
     public GameObject vectorPrefab;
-    
-
     VectorController velocityVector;
     VectorController forceVector;
 
@@ -20,8 +18,10 @@ public class ChargeController : MonoBehaviour
     public Color velocityVectorColor = Color.red;
 
     
-    public float timeScaleSpeed = 1f;
-    public float timeFreezeScale = 0.01f;
+    public float timeLerpSpeed = 1f;
+    public float timeFreezeVelocity =0.01f;
+
+    public Vector3 realVelocity;
     
    
 
@@ -49,32 +49,40 @@ public class ChargeController : MonoBehaviour
     void Update()
     {
         var field=MagnetSource.getMagneticTotalMagneticField(transform.position);
-        var force=Vector3.Cross(rb.velocity, field)*forceMultiplier;
+        var force=Vector3.Cross(realVelocity, field)*forceMultiplier;
 
         var hor = Input.GetAxis("Horizontal");
         var ver = Input.GetAxis("Vertical");
+        var up = Input.GetAxis("Up");
 
-        var userForce = transform.forward * ver + transform.right * hor;
+        var userForce = new Vector3(hor, up, ver);
         userForce *= userSpeed*Time.unscaledDeltaTime;
 
-        rb.AddForce(force+userForce);
+        //rb.AddForce(force+userForce);
 
-        forceVector.setVector( force,true);
-        velocityVector.setVector(rb.velocity,true);
+        
+        
         
 
-        if(Input.GetKey(KeyCode.Space) && Time.timeScale > timeFreezeScale)
+        
+
+
+        if(Input.GetKey(KeyCode.Space))
         {
-             var timeScale = Mathf.Clamp(Time.timeScale - timeScaleSpeed * Time.unscaledDeltaTime, timeFreezeScale, 1);
-             Time.timeScale = timeScale;
+            realVelocity += ((userForce) / rb.mass) * Time.deltaTime;
+            rb.velocity = Vector3.Lerp(rb.velocity, realVelocity * timeFreezeVelocity,Time.deltaTime* timeLerpSpeed);
              
-        }else if (Time.timeScale < 1)
+             
+        }else
         {
-            var timeScale = Mathf.Clamp(Time.timeScale + timeScaleSpeed * Time.unscaledDeltaTime, timeFreezeScale, 1);
-            Time.timeScale = timeScale;
+            realVelocity += ((force + userForce) / rb.mass) * Time.deltaTime;
+            rb.velocity = Vector3.Lerp(rb.velocity, realVelocity , Time.deltaTime * timeLerpSpeed);
+
         }
 
-        print(Time.timeScale);
+
+        forceVector.setVector(force, true);
+        velocityVector.setVector(realVelocity, true);
     }
 
 
