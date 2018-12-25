@@ -49,7 +49,7 @@ public class ChargeController : MonoBehaviour
     void Update()
     {
         var field=MagnetSource.getMagneticTotalMagneticField(transform.position);
-        var force=Vector3.Cross(realVelocity, field)*forceMultiplier;
+        var force=Vector3.Cross(field, realVelocity) *forceMultiplier;
 
         var hor = Input.GetAxis("Horizontal");
         var ver = Input.GetAxis("Vertical");

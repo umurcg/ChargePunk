@@ -51,3 +51,4 @@ MonoBehaviour:
   arrowSize: 10
   arrowOffset: 0.005
   color: {r: 0.44028127, g: 0.9622642, b: 0.4538125, a: 1}
+  vectorLengthFactor: 0.75

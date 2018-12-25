@@ -18,6 +18,8 @@ public class VectorController : MonoBehaviour
 
     public Color color=Color.white;
 
+    public float vectorLengthFactor = 0.5f;
+
     // Start is called before the first frame update
     void Awake()
     {
@@ -54,7 +56,7 @@ public class VectorController : MonoBehaviour
     {
         this.vector = vector;
 
-        var offset = vector;
+        var offset = vector*vectorLengthFactor;
         var scale = new Vector3(vectorWidth, offset.magnitude / 2, vectorWidth);
 
         vectorLine.transform.up = offset;
