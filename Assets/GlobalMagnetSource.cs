@@ -19,22 +19,25 @@ public class GlobalMagnetSource : MagnetSource
     // Update is called once per frame
     void Update()
     {
+
+        //if (Input.GetMouseButton(2)){
+        //var ver = Input.GetAxis("Mouse Y");
+        //var hor = Input.GetAxis("Mouse X");
+
         var ver = Input.GetAxis("Vertical");
         var hor = Input.GetAxis("Horizontal");
 
-        
 
-        direction = Quaternion.Euler(-direction.z * ver * rotateSpeed, hor * rotateSpeed, direction.x*ver*rotateSpeed)*direction;
 
-        
-
-        if(hor!=0 || ver != 0)
-        {
-            foreach(var m in MFMeter.mFMeters)
+        direction = Quaternion.Euler(-direction.z * ver * rotateSpeed, hor * rotateSpeed, direction.x * ver * rotateSpeed) * direction;
+            if (hor != 0 || ver != 0)
             {
-                m.updateMeter();
+                foreach (var m in MFMeter.mFMeters)
+                {
+                    m.updateMeter();
+                }
             }
-        }
+        //}
 
 
 
