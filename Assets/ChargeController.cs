@@ -58,13 +58,7 @@ public class ChargeController : MonoBehaviour
         var userForce = new Vector3(hor, up, ver);
         userForce *= userSpeed*Time.unscaledDeltaTime;
 
-        //rb.AddForce(force+userForce);
-
-        
-        
-        
-
-        
+        //rb.AddForce(force+userForce);      
 
 
         if(Input.GetKey(KeyCode.Space))

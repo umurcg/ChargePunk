@@ -4,14 +4,38 @@ using UnityEngine;
 
 public class MFMeter : MonoBehaviour
 {
+
+    public static List<MFMeter> mFMeters;
+
     LineRenderer lineRenderer;
     public GameObject cylinderPrefab;
     public GameObject arrowHeadPrefab;
     public GameObject vectorObject;
 
 
+    VectorController createdVector;
+
+    private void Awake()
+    {
+        if (mFMeters == null)
+            mFMeters = new List<MFMeter>();
+
+        mFMeters.Add(this);
+    }
+
     // Update is called once per frame
     void Start()
+    {
+     
+        var createdVectorObject=Instantiate<GameObject>(vectorObject);
+        createdVectorObject.transform.position = transform.position;
+        createdVectorObject.transform.SetParent(transform);
+        createdVector = createdVectorObject.GetComponent<VectorController>();
+
+        updateMeter();
+    }
+
+    public void updateMeter()
     {
         var sources = MagnetSource.sources;
 
@@ -21,42 +45,10 @@ public class MFMeter : MonoBehaviour
             var field = s.getMagneticField(transform.position);
             totalField += field;
         }
-
-        var createdVectorObject=Instantiate<GameObject>(vectorObject);
-
-        createdVectorObject.transform.position = transform.position;
-        createdVectorObject.transform.SetParent(transform);
-
-        createdVectorObject.GetComponent<VectorController>().setVector(totalField);
-        
-
-        //var vectorStart = transform.position - totalField / 2;
-        //var vectorEnd = transform.position + totalField / 2;
-
-        //var arrowOffset = 10f;
-
-        //createObjectBetweenTwoPoints(vectorStart,vectorEnd, 0.1f,cylinderPrefab);
-        //createObjectBetweenTwoPoints(vectorStart, vectorEnd+arrowOffset*totalField.normalized, 10f, arrowHeadPrefab);
-
-        //DrawArrow.ForDebug(transform.position, totalField, Color.red);
+        createdVector.setVector(totalField);
     }
-
-
     
 
-    void createObjectBetweenTwoPoints(Vector3 start, Vector3 end, float width, GameObject objectPrefab)
-    {
-        var offset = end - start;
-        var scale = new Vector3(width, offset.magnitude / 2, width);
-        var position = start + (offset / 2);
 
-        var cylinder = Instantiate(objectPrefab, position, Quaternion.identity);
-        cylinder.transform.up = offset;
-
-        cylinder.transform.localScale = scale;
-
-        cylinder.transform.SetParent(transform);
-
-    }
 
 }
