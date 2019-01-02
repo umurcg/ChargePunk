@@ -19,13 +19,10 @@ public class ContainerController : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        print("on trigger exit");
         if (other.tag == "Player")
         {
-
-
-            SceneManager.LoadScene(0);
+            GameController.controller.die();
         }
-            
+
     }
 }

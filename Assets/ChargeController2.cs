@@ -5,7 +5,7 @@ using UnityEngine;
 public class ChargeController2 : MonoBehaviour
 {
 
-    Rigidbody rb;
+    
     public float forceMultiplier = 1;
     public float initialVelocity = 1f;
 
@@ -16,20 +16,28 @@ public class ChargeController2 : MonoBehaviour
     public Color forceVectorColor = Color.blue;
     public Color velocityVectorColor = Color.red;
 
-
     public float timeLerpSpeed = 1f;
     public float timeFreezeVelocity = 0.01f;
 
-    Vector3 realVelocity;
+    Vector3 currentVelocity;
+    Vector3 currentForce;
 
+    Rigidbody rb;
 
+    TimeFreezer timeFreezer;
 
     // Start is called before the first frame update
     void Awake()
     {
         rb = GetComponent<Rigidbody>();
-      
+        timeFreezer = GetComponent<TimeFreezer>();
 
+        createVectorObjects();        
+
+    }
+
+    void createVectorObjects()
+    {
         forceVector = Instantiate<GameObject>(vectorPrefab).GetComponent<VectorController>();
         velocityVector = Instantiate<GameObject>(vectorPrefab).GetComponent<VectorController>();
 
@@ -39,41 +47,45 @@ public class ChargeController2 : MonoBehaviour
         forceVector.transform.localPosition = Vector3.zero;
         velocityVector.transform.localPosition = Vector3.zero;
 
-
         forceVector.setVectorColor(forceVectorColor);
         velocityVector.setVectorColor(velocityVectorColor);
+
+    }
+    
+
+    void updateVectorObjects()
+    {
+        forceVector.setVector(currentForce, true);
+        velocityVector.setVector(currentVelocity, true);
     }
 
     private void Start()
     {
         rb.velocity=(initialVelocity * Vector3.forward);
-        realVelocity = rb.velocity;
+        currentVelocity = rb.velocity;
     }
 
     // Update is called once per frame
     void Update()
     {
         
-
         var field = MagnetSource.getMagneticTotalMagneticField(transform.position);
-        var force = Vector3.Cross(field, realVelocity) * forceMultiplier;
+        currentForce = Vector3.Cross(field, currentVelocity) * forceMultiplier;
 
         
-        if (Input.GetKey(KeyCode.Space))
-        {
-            
-            rb.velocity = Vector3.Lerp(rb.velocity, realVelocity * timeFreezeVelocity, Time.deltaTime * timeLerpSpeed);
-
+        if (timeFreezer.isTimeFrozen())
+        {            
+            rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity * timeFreezeVelocity, Time.deltaTime * timeLerpSpeed);
         }
         else
         {
-            realVelocity += (force / rb.mass) * Time.deltaTime;
-            rb.velocity = Vector3.Lerp(rb.velocity, realVelocity, Time.deltaTime * timeLerpSpeed);
+            currentVelocity += (currentForce / rb.mass) * Time.deltaTime;
+            rb.velocity = Vector3.Lerp(rb.velocity, currentVelocity, Time.deltaTime * timeLerpSpeed);
 
         }
 
+        updateVectorObjects();
 
-        forceVector.setVector(force, true);
-        velocityVector.setVector(realVelocity, true);
+
     }
 }
